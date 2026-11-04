@@ -1,1 +1,106 @@
 // dito enrollment and grade gui
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package com.mycompany.schoolmanagement;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+
+
+public class EnrollmentGUI extends JFrame implements ActionListener {
+    
+    private JPanel Enrollment_and_Grades;
+    private JLabel EStudentID, ECourseID, EScore, ResultLabel;
+    private JTextField EStudentIdtxt, ECourseIdtxt, EScoretxt;
+    private JButton Enroll, RecordGrade, LookUpGrade, EnrollmentBackbtn;
+    private JTextArea EnrollArea;
+    private JScrollPane EnrollScroll;        
+    EnrollmentGUI(){
+         
+        setTitle("Student Management System");
+        setSize(520, 600);
+        setLocationRelativeTo(null);
+        setLayout(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        EnrollmentBackbtn = new JButton("Back");
+        EnrollmentBackbtn.setBounds(370, 450, 100, 25);
+        EnrollmentBackbtn.addActionListener(this);
+        
+     EStudentID = new JLabel("Student ID : ");
+        EStudentID.setBounds(30, 30, 80, 25);
+        add(EStudentID);
+        
+        EStudentIdtxt = new JTextField();
+        EStudentIdtxt.setBounds(115, 30, 100, 25);
+        add(EStudentIdtxt);
+                
+        ECourseID = new JLabel("Course ID : ");
+        ECourseID.setBounds(235, 30, 80, 25);
+        add(ECourseID);
+        
+        ECourseIdtxt = new JTextField();
+        ECourseIdtxt.setBounds(315, 30, 100, 25);
+        add( ECourseIdtxt);
+        
+        EScore = new JLabel("Score : ");
+        EScore.setBounds(30, 70, 80, 25);
+        add(EScore);
+        
+        EScoretxt = new JTextField();
+        EScoretxt.setBounds(115, 70, 100, 25);
+        add(EScoretxt);
+        
+        Enroll = new JButton("Enroll");
+        Enroll.setBounds(30, 115, 100, 30);
+        add(Enroll);
+        
+        RecordGrade = new JButton("Record / Update Grade");
+        RecordGrade.setBounds(145, 115, 190, 30);
+        add(RecordGrade);
+        
+        LookUpGrade = new JButton("Look Up Grade");
+        LookUpGrade.setBounds(350, 115, 130, 30);
+        add(LookUpGrade);
+        
+        ResultLabel = new JLabel("Score: ");
+        ResultLabel.setBounds(30, 165, 300, 25);
+        add(ResultLabel);   
+        
+         EnrollArea = new JTextArea();
+        EnrollArea.setEditable(false);
+        JScrollPane EnrollScroll = new JScrollPane(EnrollArea);
+        EnrollScroll.setBounds(30, 160, 430, 280);
+
+        add(EnrollmentBackbtn);
+        add(EStudentID);
+        add(EStudentIdtxt);
+        add(ECourseID);
+        add(ECourseIdtxt);
+        add(EScore);
+        add(EScoretxt);
+        add(Enroll);
+        add(RecordGrade);
+        add(LookUpGrade);
+        add(ResultLabel);
+        
+        
+}
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+       if (e.getSource() == EnrollmentBackbtn) {
+            new MainGui().setVisible(true);
+            this.dispose(); 
+       }
+    }
+}
