@@ -1,0 +1,83 @@
+// Registraion Gui  
+
+package com.mycompany.schoolmanagement;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.*;
+
+/**
+ *
+ * @author Mcraven
+ */
+public class RegisGui extends JFrame implements ActionListener{
+        
+    private JLabel Fname,Pass1,Pass,User,title;
+    private JTextField User1,Pass2,Pass3,Fname1;
+    private JButton sub,back;
+    
+    RegisGui(){
+        setTitle("Student Management System");
+        setSize(350, 300);
+        setLocationRelativeTo(null);
+        setLayout(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        title = new JLabel("Registration! ");
+        title.setBounds(30, 0, 120, 25);
+         add(title);
+         
+        Fname = new JLabel("Enter Full Name: ");
+        Fname.setBounds(30, 40, 120, 25);
+         add(Fname);
+        
+        Fname1 = new JTextField();
+        Fname1.setBounds(140, 40, 150, 25);
+        add(Fname1);
+        
+        User = new JLabel("Enter Username: ");
+        User.setBounds(30, 85, 120, 25);
+         add(User);
+         
+        User1 = new JTextField();
+        User1.setBounds(140, 85, 150, 25);
+        add(User1);
+        
+        Pass = new JLabel("Enter a Password: ");
+        Pass.setBounds(30, 125, 120, 25);
+         add(Pass);
+         
+        Pass2 = new JTextField();
+        Pass2.setBounds(140, 125, 150, 25);
+        add(Pass2);
+        
+        Pass1 = new JLabel("Enter a Password: ");
+        Pass1.setBounds(30, 165, 120, 25);
+         add(Pass1);
+         
+        Pass3 = new JTextField();
+        Pass3.setBounds(140, 165, 150, 25);
+        add(Pass3);
+        
+        sub = new JButton("Submit");
+        sub.setBounds(30, 195, 95, 25);
+        add(sub);
+        
+        back = new JButton("Back");
+        back.setBounds(140, 195, 95, 25);
+        back.addActionListener(this);
+        add(back);
+    }
+    
+    
+    
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == back) {
+            new LogInGui().setVisible(true);
+            this.dispose();   
+        }
+    }
+    
+    
+}
