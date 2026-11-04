@@ -1,1 +1,231 @@
 // Student Gui dito
+
+
+package com.mycompany.schoolmanagement;
+
+ import java.util.List;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+
+public class StudentGUI extends JFrame implements ActionListener {
+   private JLabel Id,Name,SearchName;
+    private JTextField idtxt,nametxt,seacrhtxt;
+    private JButton Delete, Add, Update, Search, ShowAll, StudentBackbtn;
+    private JTable studentTable;
+    private DefaultTableModel studentModel;
+    private JTextArea StuArea;
+ 
+    private Map<String, String> students = new LinkedHashMap<>();
+    
+    StudentGUI(){
+    
+        setTitle("Student Management System");
+        setSize(600, 600);
+        setLocationRelativeTo(null);
+        setLayout(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        StudentBackbtn = new JButton("Back");
+        StudentBackbtn.setBounds(370, 450, 100, 25);
+        StudentBackbtn.addActionListener(this);
+
+        
+        //Students
+        Id = new JLabel("ID : ");
+        Id.setBounds(30, 30, 80, 25);
+
+        idtxt = new JTextField();
+        idtxt.setBounds(60, 30, 150, 25);
+
+        Name = new JLabel("Name : ");
+        Name.setBounds(225, 30, 50, 25);
+
+        nametxt = new JTextField();
+        nametxt.setBounds(275, 30, 180, 25);
+
+        Add = new JButton("Add");
+        Add.setBounds(30, 70, 100, 30);
+        Add.addActionListener(this);
+
+        Update = new JButton("Update");
+        Update.setBounds(145, 70, 100, 30);
+        Update.addActionListener(this);
+        
+        Delete = new JButton("Delete");
+        Delete.setBounds(260, 70, 100, 30);
+        Delete.addActionListener(this);
+        
+        SearchName = new JLabel("Search Name : ");
+        SearchName.setBounds(30, 115, 100, 25);
+        
+
+        seacrhtxt = new JTextField();
+        seacrhtxt.setBounds(135, 115, 150, 25);
+
+        Search = new JButton("Search");
+        Search.setBounds(30, 155, 100, 30);
+        Search.addActionListener(this);
+
+        ShowAll = new JButton("Show All (A-Z)");
+        ShowAll.setBounds(145, 155, 150, 30);
+        ShowAll.addActionListener(this);
+        
+                
+        StuArea = new JTextArea ();
+        StuArea.setEditable(false);
+        add(StuArea);
+        JScrollPane StuScroll = new JScrollPane(StuArea);
+        StuScroll.setBounds(30, 205, 430, 240);
+        add(StuScroll);
+       
+        
+       add(StudentBackbtn);
+       add(Id);
+       add(idtxt);
+       add(Name);
+       add(nametxt);
+       add(Add);
+       add(Delete);
+       add(Update);
+       add(SearchName);
+       add(seacrhtxt);
+       add(Search);
+       add(ShowAll);
+    
+        studentModel = new DefaultTableModel(new String[]{"ID", "Name"}, 0) {  
+            
+        };
+    }
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == StudentBackbtn) {
+            new MainGui().setVisible(true);
+            this.dispose(); 
+       }
+        
+         else if (e.getSource() == Add) {
+            String id = idtxt.getText().trim();
+            String name = nametxt.getText().trim();
+
+            if (id.isEmpty() || name.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter both ID and Name.",
+                        "Missing Info", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            if (id.contains(",")) {
+                JOptionPane.showMessageDialog(this, "ID cannot contain a comma.",
+                        "Invalid ID", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            if (students.containsKey(id)) {
+                JOptionPane.showMessageDialog(this, "A student with this ID already exists.",
+                        "Duplicate ID", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            students.put(id, name);
+          //  saveStudents();
+            idtxt.setText("");
+            nametxt.setText("");
+            ShowAll.doClick();   // refresh the list
+            JOptionPane.showMessageDialog(this, "Student added.",
+                    "Success", JOptionPane.INFORMATION_MESSAGE);
+        }
+        // ---------- UPDATE ----------
+        else if (e.getSource() == Update) {
+            String id = idtxt.getText().trim();
+            String name = nametxt.getText().trim();
+
+            if (id.isEmpty() || name.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Enter the ID of the student and the new Name.",
+                        "Missing Info", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            if (!students.containsKey(id)) {
+                JOptionPane.showMessageDialog(this, "No student found with that ID.",
+                        "Not Found", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            students.put(id, name);
+           // saveStudents();
+            idtxt.setText("");
+            nametxt.setText("");
+            ShowAll.doClick();
+            JOptionPane.showMessageDialog(this, "Student updated.",
+                    "Success", JOptionPane.INFORMATION_MESSAGE);
+        }
+
+        // ---------- DELETE ----------
+        else if (e.getSource() == Delete) {
+            String id = idtxt.getText().trim();
+
+            if (id.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Enter the ID of the student to delete.",
+                        "Missing Info", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            if (!students.containsKey(id)) {
+                JOptionPane.showMessageDialog(this, "No student found with that ID.",
+                        "Not Found", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            int choice = JOptionPane.showConfirmDialog(this,
+                    "Delete " + students.get(id) + " (ID: " + id + ")?",
+                    "Confirm Delete", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+            if (choice == JOptionPane.YES_OPTION) {
+                students.remove(id);
+               // saveStudents();
+                idtxt.setText("");
+                nametxt.setText("");
+                ShowAll.doClick();
+            }
+        }
+
+        // ---------- SEARCH ----------
+        else if (e.getSource() == Search) {
+            String keyword = seacrhtxt.getText().trim().toLowerCase();
+
+            if (keyword.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Enter a name to search.",
+                        "Missing Info", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            StringBuilder sb = new StringBuilder();
+            int count = 0;
+            for (Map.Entry<String, String> s : students.entrySet()) {
+                if (s.getValue().toLowerCase().contains(keyword)) {
+                    sb.append("ID: ").append(s.getKey())
+                      .append("   |   Name: ").append(s.getValue()).append("\n");
+                    count++;
+                }
+            }
+
+            StuArea.setText(count == 0 ? "No students found." : sb.toString());
+        }
+
+        // ---------- SHOW ALL (A-Z) ----------
+        else if (e.getSource() == ShowAll) {
+            List<Map.Entry<String, String>> list = new ArrayList<>(students.entrySet());
+            list.sort((a, b) -> a.getValue().compareToIgnoreCase(b.getValue()));
+
+            StringBuilder sb = new StringBuilder();
+            for (Map.Entry<String, String> s : list) {
+                sb.append("ID: ").append(s.getKey())
+                  .append("   |   Name: ").append(s.getValue()).append("\n");
+            }
+
+            StuArea.setText(list.isEmpty() ? "No students yet." : sb.toString());
+        }
+    }
+    
+}
