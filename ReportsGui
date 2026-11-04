@@ -1,1 +1,92 @@
 // Report Gui
+
+
+package com.mycompany.schoolmanagement;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.*;
+
+
+
+
+public class ReportGUI extends JFrame implements ActionListener {
+
+    
+    private JLabel RStudentID, RCourseID;
+    private JTextField RStudentIdtxt, RCourseIdtxt;
+    private JButton Transcript, AttendanceReport, PerformanceReport, MarkPresent, MarkAbsent, ReportBackbtn ;
+    private JTextArea reportArea;
+    
+    
+    
+    ReportGUI(){
+        
+        setTitle("Student Management System");
+        setSize(520, 600);
+        setLocationRelativeTo(null);
+        setLayout(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        ReportBackbtn = new JButton("Back");
+        ReportBackbtn.setBounds(370, 450, 100, 25);
+        ReportBackbtn.addActionListener(this);
+        
+        RStudentID = new JLabel("Student ID : ");
+        RStudentID.setBounds(30, 30, 80, 25);
+
+        RStudentIdtxt = new JTextField();
+        RStudentIdtxt.setBounds(115, 30, 100, 25);
+
+        RCourseID = new JLabel("Course ID : ");
+        RCourseID.setBounds(235, 30, 80, 25);
+
+        RCourseIdtxt = new JTextField();
+        RCourseIdtxt.setBounds(315, 30, 100, 25);
+
+        Transcript = new JButton("Transcript");
+        Transcript.setBounds(30, 70, 100, 30);
+
+        AttendanceReport = new JButton("Attendance Report");
+        AttendanceReport.setBounds(145, 70, 150, 30);
+
+        PerformanceReport = new JButton("Performance Report");
+        PerformanceReport.setBounds(310, 70, 160, 30);
+
+        MarkPresent = new JButton("Mark Present");
+        MarkPresent.setBounds(30, 110, 130, 30);
+
+        MarkAbsent = new JButton("Mark Absent");
+        MarkAbsent.setBounds(175, 110, 130, 30);
+        
+        reportArea = new JTextArea();
+        reportArea.setEditable(false);
+        JScrollPane reportScroll = new JScrollPane(reportArea);
+        reportScroll.setBounds(30, 160, 430, 280);
+        
+        
+        add(ReportBackbtn);
+        add(RStudentID);
+        add(RStudentIdtxt);
+        add(RCourseID);
+        add(RCourseIdtxt);
+        add(Transcript);
+        add(AttendanceReport);
+        add(PerformanceReport);
+        add(MarkPresent);
+        add(MarkAbsent);
+        add(reportScroll);
+
+        
+    }
+    @Override
+    public void actionPerformed(ActionEvent e) {   
+          if (e.getSource() == ReportBackbtn) {
+            new MainGui().setVisible(true);
+            this.dispose();   
+        }
+    }
+    
+    
+    
+}
