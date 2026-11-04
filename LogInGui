@@ -1,1 +1,93 @@
 // dito yung code sa gui Log in interface!
+
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package com.mycompany.schoolmanagement;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.*;
+
+/**
+ *
+ * @author Mcraven
+ */
+public class LogInGui extends JFrame implements ActionListener {
+     
+    private JLabel user, pass,reg;
+    private JTextField user1;
+    private JButton logi,regButton;
+    private JPasswordField pass1;
+    
+     LogInGui() {
+        setTitle("Student Management System");
+        setSize(300, 300);
+        setLocationRelativeTo(null);
+        setLayout(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+         user = new JLabel("Username : ");
+         user.setBounds(30, 30, 80, 25);
+         add(user);
+         
+         pass = new JLabel("Password : ");
+         pass.setBounds(30, 60, 80, 25);
+         add(pass);
+         
+         user1 = new JTextField();
+         user1.setBounds(105, 30, 110, 25);
+         add(user1);
+         
+         pass1 = new JPasswordField();
+         pass1.setBounds(105, 60, 110, 25);
+         add(pass1);
+         
+         logi = new JButton("Log In");
+         logi.setBounds(15, 90, 250, 30);
+         logi.addActionListener(this);
+         add(logi);
+         
+         reg = new JLabel("Doesn't Have Account? ");
+         reg.setBounds(30, 125, 150, 25);
+         add(reg);
+         
+        regButton = new JButton("Register");
+        regButton.setBounds(15, 150, 250, 30);
+        regButton.addActionListener(this);    
+        add(regButton);
+     }
+    
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        
+    if (e.getSource() == logi) {
+    String username = user1.getText().trim();
+    String password = new String(pass1.getPassword());
+
+    if (username.isEmpty() || password.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Please fill in all fields.",
+                "Missing Info", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    if (isValidLogin(username, password)) {
+        new MainGui().setVisible(true);
+        this.dispose();
+    } else {
+        JOptionPane.showMessageDialog(this, "Invalid username or password.",
+                "Login Failed", JOptionPane.ERROR_MESSAGE);
+    }
+    } else if (e.getSource() == regButton) {
+    new RegisGui().setVisible(true);
+    this.dispose();
+    }
+}
+
+    // Placeholder: replace with a database or file check
+    private boolean isValidLogin(String username, String password) {
+        return username.equals("admin") && password.equals("1234");
+    }
+}
