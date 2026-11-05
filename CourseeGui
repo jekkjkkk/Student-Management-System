@@ -1,33 +1,32 @@
-// Courses Gui dito
-
 package com.mycompany.schoolmanagement;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 public class CourseGUI extends JFrame implements ActionListener {
+
     private JLabel CourseID, CourseNameAdd, CourseNamesearch;
     private JTextField CourseIdtxt, CourseNametxt, CrouseNamesearchtxt;
     private JButton CDelete, CAdd, CUpdate, CSearch, CShowAll, CourseBackbtn;
     private JTable courseTable;
     private DefaultTableModel courseModel;
-    private JScrollPane courseScroll; 
-    private Map<String, String> students = new LinkedHashMap<>();
+    private JScrollPane courseScroll;
 
-  CourseGUI() { 
+    private ArrayList<String[]> courseRecords = new ArrayList<>();
+
+    CourseGUI() {
+
         setTitle("Student Management System");
         setSize(520, 600);
         setLocationRelativeTo(null);
         setLayout(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
+
         CourseBackbtn = new JButton("Back");
         CourseBackbtn.setBounds(370, 450, 100, 25);
-        CourseBackbtn.addActionListener(this);
         add(CourseBackbtn);
 
         CourseID = new JLabel("Course ID : ");
@@ -48,7 +47,6 @@ public class CourseGUI extends JFrame implements ActionListener {
 
         CAdd = new JButton("Add");
         CAdd.setBounds(30, 70, 100, 30);
-        CAdd.addActionListener(this);
         add(CAdd);
 
         CUpdate = new JButton("Update");
@@ -75,59 +73,170 @@ public class CourseGUI extends JFrame implements ActionListener {
         CShowAll.setBounds(145, 155, 150, 30);
         add(CShowAll);
 
-       
         courseModel = new DefaultTableModel(new String[]{"Course ID", "Course Name", "Enrolled"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
-        
+
         courseTable = new JTable(courseModel);
-        
-       
+
         courseScroll = new JScrollPane(courseTable);
         courseScroll.setBounds(30, 205, 430, 240);
-        add(courseScroll); 
-        
+        add(courseScroll);
+
+        CourseBackbtn.addActionListener(this);
+        CAdd.addActionListener(this);
+        CUpdate.addActionListener(this);
+        CDelete.addActionListener(this);
+        CSearch.addActionListener(this);
+        CShowAll.addActionListener(this);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        String courseId = CourseIdtxt.getText().trim();
+        String courseName = CourseNametxt.getText().trim();
+        String keyword = CrouseNamesearchtxt.getText().trim();
+
         if (e.getSource() == CourseBackbtn) {
             new MainGui().setVisible(true);
-            this.dispose(); 
-       }
-        else if (e.getSource() == CAdd) {
-            String id = CourseID.getText().trim();
-            String name = CourseIdtxt.getText().trim();
+            this.dispose();
 
-            if (id.isEmpty() || name.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Please enter both ID and Name.",
-                        "Missing Info", JOptionPane.WARNING_MESSAGE);
+        } else if (e.getSource() == CAdd) {
+            if (courseId.isEmpty() || courseName.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter a Course ID and Name.");
                 return;
             }
-            if (id.contains(",")) {
-                JOptionPane.showMessageDialog(this, "ID cannot contain a comma.",
-                        "Invalid ID", JOptionPane.WARNING_MESSAGE);
+            if (courseId.contains(",")) {
+                JOptionPane.showMessageDialog(this, "Course ID cannot contain a comma.");
                 return;
             }
-            if (students.containsKey(id)) {
-                JOptionPane.showMessageDialog(this, "A student with this ID already exists.",
-                        "Duplicate ID", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+            addCourse(courseId, courseName);
 
-            students.put(id, name);
-          //  saveStudents();
-            CourseID.setText("");
-            CourseIdtxt.setText("");
-            CShowAll.doClick();   // refresh the list
-            JOptionPane.showMessageDialog(this, "Student added.",
-                    "Success", JOptionPane.INFORMATION_MESSAGE);
+        } else if (e.getSource() == CUpdate) {
+            if (courseId.isEmpty() || courseName.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter a Course ID and the new Name.");
+                return;
+            }
+            updateCourse(courseId, courseName);
+
+        } else if (e.getSource() == CDelete) {
+            if (courseId.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter a Course ID.");
+                return;
+            }
+            deleteCourse(courseId);
+
+        } else if (e.getSource() == CSearch) {
+            if (keyword.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter a course to search.");
+                return;
+            }
+            searchCourse(keyword);
+
+        } else if (e.getSource() == CShowAll) {
+            showAllCourses();
+        }
+    }
+
+    private int findCourse(String courseId) {
+        for (int i = 0; i < courseRecords.size(); i++) {
+            String[] record = courseRecords.get(i);
+            if (record[0].equalsIgnoreCase(courseId)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private void addCourse(String courseId, String courseName) {
+        if (findCourse(courseId) != -1) {
+            JOptionPane.showMessageDialog(this, "A course with this ID already exists.");
+            return;
         }
 
+        courseRecords.add(new String[]{courseId, courseName});
+        clearFields();
+        showAllCourses();
+        JOptionPane.showMessageDialog(this, "Course added.");
     }
-    
-  
+
+    private void updateCourse(String courseId, String courseName) {
+        int index = findCourse(courseId);
+
+        if (index == -1) {
+            JOptionPane.showMessageDialog(this, "No course found with this ID.");
+            return;
+        }
+
+        courseRecords.get(index)[1] = courseName;
+        clearFields();
+        showAllCourses();
+        JOptionPane.showMessageDialog(this, "Course updated.");
     }
+
+    private void deleteCourse(String courseId) {
+        int index = findCourse(courseId);
+
+        if (index == -1) {
+            JOptionPane.showMessageDialog(this, "No course found with this ID.");
+            return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(this, "Delete " + courseRecords.get(index)[1] + "?");
+        if (confirm != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        courseRecords.remove(index);
+        clearFields();
+        showAllCourses();
+        JOptionPane.showMessageDialog(this, "Course deleted.");
+    }
+
+    private void searchCourse(String keyword) {
+        courseModel.setRowCount(0);
+        int count = 0;
+
+        for (int i = 0; i < courseRecords.size(); i++) {
+            String[] record = courseRecords.get(i);
+            if (record[0].toLowerCase().contains(keyword.toLowerCase())
+                    || record[1].toLowerCase().contains(keyword.toLowerCase())) {
+                courseModel.addRow(new Object[]{record[0], record[1], 0});
+                count++;
+            }
+        }
+
+        if (count == 0) {
+            JOptionPane.showMessageDialog(this, "No course found for: " + keyword);
+        }
+    }
+
+    private void showAllCourses() {
+        ArrayList<String[]> sorted = new ArrayList<>(courseRecords);
+
+        for (int i = 0; i < sorted.size() - 1; i++) {
+            for (int j = i + 1; j < sorted.size(); j++) {
+                if (sorted.get(j)[1].compareToIgnoreCase(sorted.get(i)[1]) < 0) {
+                    String[] temp = sorted.get(i);
+                    sorted.set(i, sorted.get(j));
+                    sorted.set(j, temp);
+                }
+            }
+        }
+
+        courseModel.setRowCount(0);
+        for (int i = 0; i < sorted.size(); i++) {
+            String[] record = sorted.get(i);
+            courseModel.addRow(new Object[]{record[0], record[1], 0});
+        }
+    }
+
+    private void clearFields() {
+        CourseIdtxt.setText("");
+        CourseNametxt.setText("");
+        CrouseNamesearchtxt.setText("");
+    }
+}
