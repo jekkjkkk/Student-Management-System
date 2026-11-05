@@ -1,106 +1,126 @@
-// dito enrollment and grade gui
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.mycompany.schoolmanagement;
 
+import java.awt.EventQueue;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
 
+public class EnrollmentGUI extends JFrame {
 
-public class EnrollmentGUI extends JFrame implements ActionListener {
-    
+    private static final long serialVersionUID = 1L;
     private JPanel Enrollment_and_Grades;
     private JLabel EStudentID, ECourseID, EScore, ResultLabel;
     private JTextField EStudentIdtxt, ECourseIdtxt, EScoretxt;
     private JButton Enroll, RecordGrade, LookUpGrade, EnrollmentBackbtn;
     private JTextArea EnrollArea;
-    private JScrollPane EnrollScroll;        
-    EnrollmentGUI(){
-         
+    private JScrollPane EnrollScroll;
+
+    private HashMap<String, Double> enrollments = new HashMap<String, Double>();
+
+    public static void main(String[] args) {
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                try {
+                    EnrollmentGUI frame = new EnrollmentGUI();
+                    frame.setVisible(true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    public EnrollmentGUI() {
         setTitle("Student Management System");
         setSize(520, 600);
         setLocationRelativeTo(null);
-        setLayout(null);
+        setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
-        EnrollmentBackbtn = new JButton("Back");
-        EnrollmentBackbtn.setBounds(370, 450, 100, 25);
-        EnrollmentBackbtn.addActionListener(this);
-        
-     EStudentID = new JLabel("Student ID : ");
+        Enrollment_and_Grades = new JPanel();
+        Enrollment_and_Grades.setBorder(new EmptyBorder(5, 5, 5, 5));
+        setContentPane(Enrollment_and_Grades);
+        Enrollment_and_Grades.setLayout(null);
+
+        EStudentID = new JLabel("Student ID : ");
+        EStudentID.setFont(new Font("Tahoma", Font.PLAIN, 14));
         EStudentID.setBounds(30, 30, 80, 25);
-        add(EStudentID);
-        
+        Enrollment_and_Grades.add(EStudentID);
+
         EStudentIdtxt = new JTextField();
+        EStudentIdtxt.setFont(new Font("Tahoma", Font.PLAIN, 14));
         EStudentIdtxt.setBounds(115, 30, 100, 25);
-        add(EStudentIdtxt);
-                
+        Enrollment_and_Grades.add(EStudentIdtxt);
+        EStudentIdtxt.setColumns(10);
+
         ECourseID = new JLabel("Course ID : ");
+        ECourseID.setFont(new Font("Tahoma", Font.PLAIN, 14));
         ECourseID.setBounds(235, 30, 80, 25);
-        add(ECourseID);
-        
+        Enrollment_and_Grades.add(ECourseID);
+
         ECourseIdtxt = new JTextField();
+        ECourseIdtxt.setFont(new Font("Tahoma", Font.PLAIN, 14));
         ECourseIdtxt.setBounds(315, 30, 100, 25);
-        add( ECourseIdtxt);
-        
+        Enrollment_and_Grades.add(ECourseIdtxt);
+        ECourseIdtxt.setColumns(10);
+
         EScore = new JLabel("Score : ");
+        EScore.setFont(new Font("Tahoma", Font.PLAIN, 14));
         EScore.setBounds(30, 70, 80, 25);
-        add(EScore);
-        
+        Enrollment_and_Grades.add(EScore);
+
         EScoretxt = new JTextField();
+        EScoretxt.setFont(new Font("Tahoma", Font.PLAIN, 14));
         EScoretxt.setBounds(115, 70, 100, 25);
-        add(EScoretxt);
-        
+        Enrollment_and_Grades.add(EScoretxt);
+        EScoretxt.setColumns(10);
+
         Enroll = new JButton("Enroll");
+        Enroll.setFont(new Font("Tahoma", Font.PLAIN, 14));
         Enroll.setBounds(30, 115, 100, 30);
-        add(Enroll);
-        
+        Enroll.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                String studentId = EStudentIdtxt.getText().trim();
+                String courseId = ECourseIdtxt.getText().trim();
+                String key = studentId + "|" + courseId;
+
+                if (studentId.isEmpty() || courseId.isEmpty()) {
+                    JOptionPane.showMessageDialog(Enroll, "Enter Student ID and Course ID");
+                } else if (enrollments.containsKey(key)) {
+                    JOptionPane.showMessageDialog(Enroll, "Student is already enrolled in this course");
+                } else {
+                    enrollments.put(key, null);
+                    EnrollArea.append("Enrolled: Student " + studentId + " in Course " + courseId + "\n");
+                }
+            }
+        });
+        Enrollment_and_Grades.add(Enroll);
+
         RecordGrade = new JButton("Record / Update Grade");
+        RecordGrade.setFont(new Font("Tahoma", Font.PLAIN, 14));
         RecordGrade.setBounds(145, 115, 190, 30);
-        add(RecordGrade);
-        
-        LookUpGrade = new JButton("Look Up Grade");
-        LookUpGrade.setBounds(350, 115, 130, 30);
-        add(LookUpGrade);
-        
-        ResultLabel = new JLabel("Score: ");
-        ResultLabel.setBounds(30, 165, 300, 25);
-        add(ResultLabel);   
-        
-         EnrollArea = new JTextArea();
-        EnrollArea.setEditable(false);
-        JScrollPane EnrollScroll = new JScrollPane(EnrollArea);
-        EnrollScroll.setBounds(30, 160, 430, 280);
+        RecordGrade.addActionListener(new ActionListener() {
 
-        add(EnrollmentBackbtn);
-        add(EStudentID);
-        add(EStudentIdtxt);
-        add(ECourseID);
-        add(ECourseIdtxt);
-        add(EScore);
-        add(EScoretxt);
-        add(Enroll);
-        add(RecordGrade);
-        add(LookUpGrade);
-        add(ResultLabel);
-        
-        
-}
+            public void actionPerformed(ActionEvent e) {
+                String studentId = EStudentIdtxt.getText().trim();
+                String courseId = ECourseIdtxt.getText().trim();
+                String key = studentId + "|" + courseId;
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-       if (e.getSource() == EnrollmentBackbtn) {
-            new MainGui().setVisible(true);
-            this.dispose(); 
-       }
-    }
-}
+                if (!enrollments.containsKey(key)) {
+                    JOptionPane.showMessageDialog(RecordGrade, "Student is not enrolled in this course");
+                }
