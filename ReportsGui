@@ -1,10 +1,8 @@
-// Report Gui
-
-
 package com.mycompany.schoolmanagement;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import javax.swing.*;
 
 
@@ -18,6 +16,9 @@ public class ReportGUI extends JFrame implements ActionListener {
     private JButton Transcript, AttendanceReport, PerformanceReport, MarkPresent, MarkAbsent, ReportBackbtn ;
     private JTextArea reportArea;
     
+    private ArrayList<String[]> gradeRecords = new ArrayList<>();
+    private ArrayList<String[]> attendanceRecords = new ArrayList<>();
+    
     
     
     ReportGUI(){
@@ -30,63 +31,193 @@ public class ReportGUI extends JFrame implements ActionListener {
         
         ReportBackbtn = new JButton("Back");
         ReportBackbtn.setBounds(370, 450, 100, 25);
-        ReportBackbtn.addActionListener(this);
+        add(ReportBackbtn);
         
         RStudentID = new JLabel("Student ID : ");
         RStudentID.setBounds(30, 30, 80, 25);
+        add(RStudentID);
 
         RStudentIdtxt = new JTextField();
         RStudentIdtxt.setBounds(115, 30, 100, 25);
+        add(RStudentIdtxt);
 
         RCourseID = new JLabel("Course ID : ");
         RCourseID.setBounds(235, 30, 80, 25);
+        add(RCourseID);
 
         RCourseIdtxt = new JTextField();
         RCourseIdtxt.setBounds(315, 30, 100, 25);
+        add(RCourseIdtxt);
 
         Transcript = new JButton("Transcript");
         Transcript.setBounds(30, 70, 100, 30);
+        add(Transcript);
 
         AttendanceReport = new JButton("Attendance Report");
         AttendanceReport.setBounds(145, 70, 150, 30);
+        add(AttendanceReport);
 
         PerformanceReport = new JButton("Performance Report");
         PerformanceReport.setBounds(310, 70, 160, 30);
+        add(PerformanceReport);
 
         MarkPresent = new JButton("Mark Present");
         MarkPresent.setBounds(30, 110, 130, 30);
+        add(MarkPresent);
 
         MarkAbsent = new JButton("Mark Absent");
         MarkAbsent.setBounds(175, 110, 130, 30);
+        add(MarkAbsent);
         
         reportArea = new JTextArea();
         reportArea.setEditable(false);
         JScrollPane reportScroll = new JScrollPane(reportArea);
         reportScroll.setBounds(30, 160, 430, 280);
-        
-        
-        add(ReportBackbtn);
-        add(RStudentID);
-        add(RStudentIdtxt);
-        add(RCourseID);
-        add(RCourseIdtxt);
-        add(Transcript);
-        add(AttendanceReport);
-        add(PerformanceReport);
-        add(MarkPresent);
-        add(MarkAbsent);
         add(reportScroll);
-
         
+        
+        
+        ReportBackbtn.addActionListener(this);
+        Transcript.addActionListener(this);
+        AttendanceReport.addActionListener(this);
+        PerformanceReport.addActionListener(this);
+        MarkPresent.addActionListener(this);
+        MarkAbsent.addActionListener(this);
     }
+ 
     @Override
-    public void actionPerformed(ActionEvent e) {   
-          if (e.getSource() == ReportBackbtn) {
+    public void actionPerformed(ActionEvent e) {
+        String studentId = RStudentIdtxt.getText().trim();
+        String courseId = RCourseIdtxt.getText().trim();
+ 
+        if (e.getSource() == ReportBackbtn) {
             new MainGui().setVisible(true);
-            this.dispose();   
+            this.dispose();
+ 
+        } else if (e.getSource() == Transcript) {
+            if (studentId.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter a Student ID.");
+                return;
+            }
+            showTranscript(studentId);
+ 
+        } else if (e.getSource() == AttendanceReport) {
+            if (studentId.isEmpty() || courseId.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter a Student ID and Course ID.");
+                return;
+            }
+            showAttendanceReport(studentId, courseId);
+ 
+        } else if (e.getSource() == PerformanceReport) {
+            if (studentId.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter a Student ID.");
+                return;
+            }
+            showPerformanceReport(studentId);
+ 
+        } else if (e.getSource() == MarkPresent) {
+            if (studentId.isEmpty() || courseId.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter a Student ID and Course ID.");
+                return;
+            }
+            addAttendance(studentId, courseId, "Present");
+            reportArea.setText(studentId + " marked PRESENT in " + courseId + ".");
+ 
+        } else if (e.getSource() == MarkAbsent) {
+            if (studentId.isEmpty() || courseId.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter a Student ID and Course ID.");
+                return;
+            }
+            addAttendance(studentId, courseId, "Absent");
+            reportArea.setText(studentId + " marked ABSENT in " + courseId + ".");
         }
     }
     
+    private void addAttendance(String studentId, String courseId, String status) {
+        attendanceRecords.add(new String[]{studentId, courseId, status});
+    }
     
+    private void showTranscript(String studentId) {
+        String text = "TRANSCRIPT\nStudent ID: " + studentId + "\n\n";
+        double total = 0.0;
+        int count = 0;
+        
+        for (int i = 0; i < gradeRecords.size(); i++) {
+            String[] record = gradeRecords.get(i);
+            if (record[0].equalsIgnoreCase(studentId)) {
+                text += record[1] + ": " + record[2] + "\n";
+                total += Double.parseDouble(record[2]);
+                count++;
+            }
+        }
+        
+        if (count == 0) {
+            reportArea.setText("No grades found for Student ID: " + studentId);
+        } else {
+            reportArea.setText(text + "\nAverage: " + String.format("%.2f", total / count));
+        }
+    }
     
+    private void showAttendanceReport(String studentId, String courseId) {
+        int present = 0;
+        int absent = 0;
+        
+        for (int i = 0; i < attendanceRecords.size(); i++) {
+            String[] record = attendanceRecords.get(i);
+            if (record[0].equalsIgnoreCase(studentId) && record[1].equalsIgnoreCase(courseId)) {
+                if (record[2].equals("Present")) {
+                    present++;
+                } else {
+                    absent++;
+                }
+            }
+        }
+        
+        if (present + absent == 0) {
+            reportArea.setText("No attendance records found for " + studentId + " in " + courseId);
+        } else {
+            double percent = (present * 100.0) / (present + absent);
+            reportArea.setText("ATTENDANCE REPORT\n" +
+                               "Student ID: " + studentId + "\n" +
+                               "Course ID: " + courseId + "\n\n" +
+                               "Present: " + present + "\n" +
+                               "Absent: " + absent + "\n" +
+                               "Attendance: " + String.format("%.1f", percent) + "%");
+        }
+    }
+    
+    private void showPerformanceReport(String studentId) {
+        double total = 0.0;
+        double highest = 0.0;
+        double lowest = 0.0;
+        int count = 0;
+        
+        for (int i = 0; i < gradeRecords.size(); i++) {
+            String[] record = gradeRecords.get(i);
+            if (record[0].equalsIgnoreCase(studentId)) {
+                double grade = Double.parseDouble(record[2]);
+                if (count == 0 || grade > highest) {
+                    highest = grade;
+                }
+                if (count == 0 || grade < lowest) {
+                    lowest = grade;
+                }
+                total += grade;
+                count++;
+            }
+        }
+        
+        if (count == 0) {
+            reportArea.setText("No grades found for Student ID: " + studentId);
+        } else {
+            double average = total / count;
+            String remark = average >= 75 ? "Passed" : "Needs Improvement";
+            reportArea.setText("PERFORMANCE REPORT\n" +
+                               "Student ID: " + studentId + "\n\n" +
+                               "Average: " + String.format("%.2f", average) + "\n" +
+                               "Highest: " + highest + "\n" +
+                               "Lowest: " + lowest + "\n" +
+                               "Remark: " + remark);
+        }
+    }
 }
